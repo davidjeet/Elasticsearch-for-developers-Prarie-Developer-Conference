@@ -1,0 +1,125 @@
+﻿<#@ template language="C#" hostspecific="True" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.IO" #>
+<#@ assembly name="$(ProjectDir)bin\Debug\Import.Console.exe" #>
+<#@ import namespace="Import.Console" #>
+<#@ output extension=".sh" #>
+<#
+        string moviesFile = this.Host.ResolvePath("ratings-top250-list.txt");
+        string genresFile = this.Host.ResolvePath("genres.list.txt");
+        const string index = "imdb";
+        const string type = "movies";
+		const string shell = @"#!/usr/bin/env bash";
+
+        char[] spaceDelim = " ".ToCharArray();
+        char[] tabDelim = "\t".ToCharArray();
+        Dictionary<string, Movie> movieDict;
+
+			var rows = File.ReadLines(moviesFile);
+            movieDict = new Dictionary<string, Movie>();
+            int id = 0;
+
+            // PART A: Get everything but genre
+            foreach (var row in rows)
+            {
+                id++;
+                Movie movie = new Movie { Id = id };
+                var line = new Stack<string>(row.Split(spaceDelim, StringSplitOptions.RemoveEmptyEntries));
+
+                // 1. get year
+                int year;
+                if (Int32.TryParse(Regex.Replace(line.Pop(), "[()]", ""), out year))
+                {
+                    movie.Year = year;
+                }
+
+                // 2. get rating
+                var list_2 = new List<string>(line);
+                list_2.Reverse();
+                float rating;
+                if (Single.TryParse(list_2[2], out rating))
+                {
+                    movie.Rating = rating;
+                }
+
+                // 3. get title
+                list_2.RemoveRange(0, 3);
+                movie.Title = string.Join(" ", list_2);
+				movie.Title = movie.Title.Replace("'", "\\u0027");
+
+                string key = string.Format("{0} ({1})", movie.Title, movie.Year);
+
+				// 4. Initialize genres to empty array
+				movie.Genres = new string[] { "\"Unknown\"" } ; //always ensure at least  one genre
+
+				// 5. Add to dictionary
+                movieDict.Add(key, movie);
+            }
+
+
+            // PART B: Get genre
+            rows = File.ReadLines(genresFile);
+            foreach (var row in rows)
+            {
+                if (string.IsNullOrEmpty(row)) continue;
+                var line = row.Split(tabDelim, StringSplitOptions.RemoveEmptyEntries);
+                var key = line[0];
+                if (movieDict.ContainsKey(key))
+                {
+                    Movie movie = movieDict[key];
+                    List<string> genres = new List<string>(movie.Genres);
+					genres.Remove("\"Unknown\"");   // remove "Unknown" since we have at least one genre 
+                    genres.Add( "\"" +   line[1] + "\"");
+                    movie.Genres = genres.ToArray();
+                    movieDict[key] = movie;
+                }
+            }
+#>
+<#= shell #>
+# Check that Elasticsearch is running
+curl -s "http://localhost:9200" 2>&1 > /dev/null
+if [ $? != 0 ]; then
+    echo "Unable to contact Elasticsearch on port 9200."
+    echo "Please ensure Elasticsearch is running and can be reached at http://localhost:9200/"
+    exit -1
+fi
+
+echo "WARNING, this script will delete the '<#= index #>' index and re-index all data!"
+echo "Press Control-C to cancel this operation."
+echo
+echo "Press [Enter] to continue."
+read
+
+# Delete the old index, swallow failures if it doesn't exist
+curl -s -XDELETE 'localhost:9200/<#= index #>' > /dev/null
+
+## Create the next index using mapping.json
+# echo "Creating '<#= index #>' index..."
+#curl -s -XPOST 'localhost:9200/<#= index #>' -d@$(dirname $0)/mapping.json
+## Wait for index to become yellow
+#curl -s 'localhost:9200/<#= index #>/_health?wait_for_status=yellow&timeout=10s' > /dev/null
+#echo
+#echo "Done creating '<#= index #>' index."
+
+echo
+echo "Indexing data..."
+
+<#
+
+			// PART C: Generate the shell script
+            foreach (Movie movie in movieDict.Values)
+            { 
+#>
+echo
+curl -s -XPOST 'localhost:9200/<#= index #>/<#= type #>/<#= movie.Id #>' -d'{
+  "title": "<#= movie.Title #>",
+  "rating": <#= movie.Rating #>,
+  "year": <#= movie.Year #>,
+  "genres": [<#= string.Join(",",  movie.Genres) #>]
+}'
+
+<# } #>

@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StackExchange Cooking - Elasticsearch Demo</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Stack Exchange - Cooking", "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Re-Index ElasticSearch", "ReIndex", "Home")</li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+    @*<div class="container body-content">*@
+    <div>
+
+        @using (@Html.BeginForm("FullTextSearch", "Home"))
+        {
+
+
+            <div class="input-group" style="padding:10px;">
+               
+                <input type="text" class="form-control" placeholder="Search" name="q" style="padding:6px 6px;float:right;" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+                
+            </div>
+           <div style=" float:right;margin-right:25px;"><label>Add highlights: </label> <input id="addHighlights" name="addHighlights" value="true" type="checkbox" /></div>
+        }
+
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                @RenderBody()
+            </div>
+        </div>
+
+  <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - StackExchange Cooking Elasticsearch Demo</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

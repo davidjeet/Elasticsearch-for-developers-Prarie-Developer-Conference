@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Stack Exchange - Cooking";
+}
+
+@model IEnumerable<StackExchangeModel.Post>
+
+@{
+    ViewBag.Title = "Index2";
+}
+
+
+@Html.Raw(ViewBag.Message)
+
+@foreach (var item in Model)
+{
+    <h3 style="color:blue !important;">@Html.DisplayFor(modelItem => item.Title)</h3>
+    <p>@Html.Raw(item.Body)</p>
+
+    <div style="text-align:right; font-style:italic;">Posted on @item.CreationDate.ToString() by @item.OwnerUserId</div>
+
+    <hr />
+
+}

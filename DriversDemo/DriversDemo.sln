@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticsearchNet.Demo", "ElasticsearchNet.Demo\ElasticsearchNet.Demo.csproj", "{59E3DAD6-EF79-47BE-B055-47E58C0AB725}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nest.Demo", "Nest.Demo\Nest.Demo.csproj", "{C28E6BFD-B1C1-465C-B15D-9AB936F26C8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59E3DAD6-EF79-47BE-B055-47E58C0AB725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59E3DAD6-EF79-47BE-B055-47E58C0AB725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59E3DAD6-EF79-47BE-B055-47E58C0AB725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59E3DAD6-EF79-47BE-B055-47E58C0AB725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C28E6BFD-B1C1-465C-B15D-9AB936F26C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C28E6BFD-B1C1-465C-B15D-9AB936F26C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C28E6BFD-B1C1-465C-B15D-9AB936F26C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C28E6BFD-B1C1-465C-B15D-9AB936F26C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
