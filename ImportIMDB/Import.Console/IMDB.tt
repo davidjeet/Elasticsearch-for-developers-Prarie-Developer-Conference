@@ -11,6 +11,8 @@
 <#
         string moviesFile = this.Host.ResolvePath("ratings-top250-list.txt");
         string genresFile = this.Host.ResolvePath("genres.list.txt");
+        string mappingsFile = this.Host.ResolvePath("MappingIMDB.txt");
+
         const string index = "imdb";
         const string type = "movies";
 		const string shell = @"#!/usr/bin/env bash";
@@ -18,6 +20,9 @@
         char[] spaceDelim = " ".ToCharArray();
         char[] tabDelim = "\t".ToCharArray();
         Dictionary<string, Movie> movieDict;
+
+		// PART 0: Create Mappings
+		string mapping = File.ReadAllText(mappingsFile);
 
 			var rows = File.ReadLines(moviesFile);
             movieDict = new Dictionary<string, Movie>();
@@ -78,6 +83,8 @@
                     movieDict[key] = movie;
                 }
             }
+
+
 #>
 <#= shell #>
 # Check that Elasticsearch is running
@@ -98,12 +105,14 @@ read
 curl -s -XDELETE 'localhost:9200/<#= index #>' > /dev/null
 
 ## Create the next index using mapping.json
+
 # echo "Creating '<#= index #>' index..."
-#curl -s -XPOST 'localhost:9200/<#= index #>' -d@$(dirname $0)/mapping.json
-## Wait for index to become yellow
-#curl -s 'localhost:9200/<#= index #>/_health?wait_for_status=yellow&timeout=10s' > /dev/null
-#echo
-#echo "Done creating '<#= index #>' index."
+<#= mapping #>
+######curl -s -XPOST 'localhost:9200/<#= index #>' -d@$(dirname $0)/mapping.json
+# Wait for index to become yellow
+curl -s 'localhost:9200/<#= index #>/_health?wait_for_status=yellow&timeout=10s' > /dev/null
+echo
+echo "Done creating '<#= index #>' index."
 
 echo
 echo "Indexing data..."

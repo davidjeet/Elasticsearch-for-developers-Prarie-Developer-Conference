@@ -1,0 +1,25 @@
+﻿echo "Adding Index and Mapping data..."
+
+echo
+
+curl -XPOST localhost:9200/imdb -d '{
+    "settings" : {
+        "number_of_shards" : 1
+    },
+    "mappings" : {
+        "movies" : {
+          "properties": 
+          {
+            "title": { 
+              "type": "string" },
+            "genres": {
+              "type": "string",
+              "index": "not_analyzed" },
+            "year": { 
+              "type": "short" },
+            "rating": {
+              "type": "float" }      
+          }
+        }
+    }
+}'

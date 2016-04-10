@@ -17,12 +17,38 @@ read
 curl -s -XDELETE 'localhost:9200/imdb' > /dev/null
 
 ## Create the next index using mapping.json
+
 # echo "Creating 'imdb' index..."
-#curl -s -XPOST 'localhost:9200/imdb' -d@$(dirname $0)/mapping.json
-## Wait for index to become yellow
-#curl -s 'localhost:9200/imdb/_health?wait_for_status=yellow&timeout=10s' > /dev/null
-#echo
-#echo "Done creating 'imdb' index."
+echo "Adding Index and Mapping data..."
+
+echo
+
+curl -XPOST localhost:9200/imdb -d '{
+    "settings" : {
+        "number_of_shards" : 1
+    },
+    "mappings" : {
+        "movies" : {
+          "properties": 
+          {
+            "title": { 
+              "type": "string" },
+            "genres": {
+              "type": "string",
+              "index": "not_analyzed" },
+            "year": { 
+              "type": "short" },
+            "rating": {
+              "type": "float" }      
+          }
+        }
+    }
+}'
+######curl -s -XPOST 'localhost:9200/imdb' -d@$(dirname $0)/mapping.json
+# Wait for index to become yellow
+curl -s 'localhost:9200/imdb/_health?wait_for_status=yellow&timeout=10s' > /dev/null
+echo
+echo "Done creating 'imdb' index."
 
 echo
 echo "Indexing data..."
