@@ -6,6 +6,7 @@ namespace StackExchangeModel
     public partial class Post
     {
         public int Id { get; set; }
+
         public int? PostTypeId { get; set; }
 
         public int? ParentId { get; set; }

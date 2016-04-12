@@ -114,19 +114,23 @@ namespace StackExchange.Web.Controllers
 
             var result = ElasticClient.Search<Post>(searchRequest);
 
-
             var posts = new List<Post>();
             if (result.Documents.Count() > 0)
             {
                 posts = result.Documents.ToList();
             }
 
-            if (result.Highlights.Count() > 0)
+            if (result.Highlights.Count() > 0 && addHighlights == true)
             {
-                foreach (var key in result.Highlights.Keys)
+                foreach (string key in result.Highlights.Keys)
                 {
-                    var doc = result.Highlights[key];
-
+                    var highlights = result.Highlights[key].Values;
+                    foreach(var hit in highlights)
+                    {                         
+                        StringBuilder sb = new StringBuilder();
+                        hit.Highlights.ToList().ForEach(h => sb.AppendFormat("{0}{1}", h, ""));
+                        posts.FirstOrDefault(x => x.Id.ToString() == key).Body = sb.ToString();
+                    }
                 }
             }
 

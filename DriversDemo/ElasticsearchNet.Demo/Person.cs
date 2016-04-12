@@ -7,16 +7,17 @@ using Elasticsearch.Net;
 
 namespace ElasticsearchNet.Demo
 {
-    public class Movie 
+    public class Person 
     {
         public int Id { get; set; }
 
-        public string Title { get; set; }
+        public string First { get; set; }
 
-        public string Description { get; set; }
+        public string Last { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+        public int Age { get; set; }
 
-        public bool AvailableOnNetflix { get; set; }
+        public DateTime? LastUpdatedOn { get; set; }
+
     }
 }

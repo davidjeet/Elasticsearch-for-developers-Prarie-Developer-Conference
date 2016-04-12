@@ -1,29 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Elasticsearch.Net;
+using Newtonsoft.Json;
 
 namespace ElasticsearchNet.Demo
 {
     class Program
     {
-        private static Movie _movie = new Movie { Id = 400, Title = "Gladiator 2", AvailableOnNetflix = false, CreatedOn = new DateTime(2000, 10, 13) };
-
         static void Main(string[] args)
         {
             var client = new ElasticLowLevelClient();
-            client.Index<Movie>("500", "Movie", new PostData<Movie>(_movie));
-            //index a document under /myindex/mytype/1
-            ////var myJson = @"{ ""hello"" : ""world"" }";
-            ////client.Index("myindex", "mytype", "1", myJson);
 
-            //var myJson = new { hello = "world" };
-            //client.Index("myindex", "mytype", "1", new PostData<string>(myJson));
+            // strongly typed object
+            object _person = new Person { Id = 9876, First = "Rob", Last = "Stark", Age = 55, LastUpdatedOn = DateTime.Now };
+            client.Index<Person>("clients", "people", new PostData<object>(_person));
 
 
-            //var indexResponse = client.Index("myindex", "mytype", "1", new { Hello = "World" });
+            // generic object
+            object _person2 = new { Id = 9876, First = "Jamie", Last = "Lannister" };
+            client.Index<object>("clients", "people", new PostData<object>(_person2));
+
         }
     }
 }
